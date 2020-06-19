@@ -1,39 +1,53 @@
-$( document ).ready(function() {
-    var appID = "066740323a96fb63bbe793994a938d5d";
 
-$(".query_btn").click(function(){
-    var query_param = $(this).prev().val();
-        if ($(this).prev().attr("placeholder") == "City") {
-                var weather = "http://api.openweathermap.org/data/2.5/weather?q=" + query_param + "&APPID=" + appID;
-        } else if ($(this).prev().attr("placeholder") == "Zip Code") {
-                var weather = "http://api.openweathermap.org/data/2.5/weather?zip=" + query_param + "&APPID=" + appID;
-        }
-    
-        $.getJSON(weather,function(json){
-            $("#city").html(json.name);
-            $("#main_weather").html(json.weather[0].main);
-            $("#description_weather").html(json.weather[0].description);
-            $("#weather_image").attr("src", "http://openweathermap.org/img/w/" + json.weather[0].icon + ".png");
-            $("#temperature").html(json.main.temp);
-            $("#pressure").html(json.main.pressure);
-            $("#humidity").html(json.main.humidity);
-            });
-        })
+$(document).ready(function() {
 
-    // Optional Code for temperature conversion
-    var fahrenheit = true;
+   $(".btn").on("click", function(event) {
+    event.preventDefault()
+    var userInput = $(".btn-dark").val()
+    console.log(userInput)
+    weather(userInput)
+    zipCode(userInput)
+   });
 
-    $("#convertToCelsius").click(function() {
-        if (fahrenheit) {
-            $("#temperature").text(((($("#temperature").text() - 32) * 5) / 9));
-        }
-        fahrenheit = false;
-    });
+var userInput = $(".input").val();
+var appID = "066740323a96fb63bbe793994a938d5d";
+var weatherAPI = "https://api.openweathermap.org/data/2.5/weather?q=";
+var queryURL = weatherAPI + userInput + "&appid=" + appID;
 
-    $("#convertToFahrenheit").click(function() {
-        if (fahrenheit == false) {
-            $("#temperature").text((($("#temperature").text() * (9/5)) + 32));
-        }
-        fahrenheit = true;
-    });
+function weather(city) {
+
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function(response) {
+        console.log(response)
+
+        let cityName = response.name;
+        let temp = response.main.temp;
+        let humidity = response.main.humidity;
+        let windSpeed = response.wind.speed;
+        let weather = response.weather;
+
+        column.append(cityName, temp, humidity, windSpeed, weather);
+     })
+   };
 });
+
+function zipCode(city) {
+var zipCodeAPI = "api.openweathermap.org/data/2.5/weather?zip={zip code},{country code}&appid={your api key}";
+var queryURL2 = zipCodeAPI + userInput + "&appid=" + appID;
+
+    $.ajax ({
+        url: queryURL2,
+        method: "GET"
+    }).then(function(response) {
+        
+        let cityName = response.name;
+        let temp = response.main.temp;
+        let humidity = response.main.humidity;
+        let windSpeed = response.wind.speed;
+        let weather = response.weather;
+
+        column.append(cityName, temp, humidity, windSpeed, weather);
+    });
+};
